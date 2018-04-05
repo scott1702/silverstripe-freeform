@@ -1,0 +1,3 @@
+Page: # extend userform instead
+  extensions:
+    - FreeformExtension
