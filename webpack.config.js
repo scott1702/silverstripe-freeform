@@ -1,13 +1,14 @@
 const Path = require('path');
 const webpackConfig = require('@silverstripe/webpack-config');
+const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 
 const {
   resolveJS,
   externalJS,
   moduleJS,
   pluginJS,
-//   moduleCSS,
-//   pluginCSS,
+  moduleCSS,
+  pluginCSS,
 } = webpackConfig;
 
 const ENV = process.env.NODE_ENV;
@@ -35,19 +36,34 @@ const config = [
     module: moduleJS(ENV, PATHS),
     plugins: pluginJS(ENV, PATHS),
   },
-//   {
-//     name: 'css',
-//     entry: {
-//       bundle: `${PATHS.SRC}/styles/bundle.scss`,
-//     },
-//     output: {
-//       path: PATHS.DIST,
-//       filename: 'styles/[name].css',
-//     },
-//     devtool: (ENV !== 'production') ? 'source-map' : '',
-//     module: moduleCSS(ENV, PATHS),
-//     plugins: pluginCSS(ENV, PATHS),
-//   },
+  {
+    name: 'css',
+    entry: {
+      bundle: `${PATHS.SRC}/styles/bundle.scss`,
+    },
+    output: {
+      path: PATHS.DIST,
+    },
+    plugins: [
+        new MiniCssExtractPlugin({
+          filename: 'css/[name].css'
+        }),
+    ],
+    module: {
+        rules: [
+            {
+                test: /\.scss$/,
+                use: [
+                    {
+                        loader: MiniCssExtractPlugin.loader,
+                    },
+                    'css-loader',
+                    'sass-loader'
+                ],
+            },
+        ],
+    },
+  },
 ];
 
 // Use WEBPACK_CHILD=js or WEBPACK_CHILD=css env var to run a single config
